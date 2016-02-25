@@ -15,7 +15,7 @@ def recv_and_process():
 
     # Create group
     yield from sock.send_json({"cmd": "group_create",
-                               "numbers": "49176123456,49175654321",
+                               "participants": "49176123456,49175654321",
                                "subject": "Lets discuss about nerdy topics"})
     # Wait for result and print it
     result = yield from sock.recv_multipart()

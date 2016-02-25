@@ -15,7 +15,7 @@ def recv_and_process():
 
     # Send message to number
     yield from sock.send_json({"cmd": "message_send",
-                               "number": "49176123456",
+                               "to": "49176123456",
                                "msg": "How are you? :)"})
     # Wait for result and print it
     result = yield from sock.recv_multipart()

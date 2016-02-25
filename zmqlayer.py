@@ -137,12 +137,12 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
     # Outgoing telegrams
     ##################################################################
     @zmqrpc
-    def message_send(self, number, msg):
+    def message_send(self, to, msg):
         """
         Transmit a text message to a recipient.
-        :param number:
+        :param to:
             mobile number (without + or 00) or Jid of the recipient
-        :type number: str
+        :type to: str
         :param msg:
             message text to transmit.
         :type msg: str|bytes
@@ -152,7 +152,7 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
         if isinstance(msg, str):
             msg = msg.encode("utf-8")
 
-        outgoingMessage = TextMessageProtocolEntity(msg, to=self.normalize_jid(number))
+        outgoingMessage = TextMessageProtocolEntity(msg, to=self.normalize_jid(to))
         self.toLower(outgoingMessage)
 
         # Assume successful transmission
@@ -162,8 +162,8 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
         return fut
 
     @zmqrpc
-    def group_create(self, subject, numbers):
-        jids = [self.normalize_jid(jid) for jid in numbers.split(',')] if numbers else []
+    def group_create(self, subject, participants):
+        jids = [self.normalize_jid(jid) for jid in participants.split(',')] if participants else []
 
         if len(jids) >= 2:
             print("Group: subject: {0}, jids: {1}".format(subject, jids))
