@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import hashlib
 from concurrent.futures import Future
 
@@ -37,6 +39,20 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
 
         return str(number) + "@s.whatsapp.net"
 
+    @staticmethod
+    def calc_numbers_hash(jids):
+        # Arrange numbers to create deterministic pattern
+        phone_numbers = [x.split('@', 1)[0] for x in jids]
+        phone_numbers.sort()
+
+        # Align all numbers as string
+        buffer = bytearray()
+        for jid in phone_numbers:
+            buffer.extend(jid.encode())
+
+        # Hash for unique length
+        return hashlib.sha1(buffer).hexdigest()
+
     def onEvent(self, layerEvent):
         if layerEvent.getName() == self.__class__.EVENT_START:
             print("Received start event.")
@@ -53,20 +69,6 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
         # Do not consume any other events (e.g. connecting yowsup)
         return False
 
-    @staticmethod
-    def calc_numbers_hash(jids):
-        # Arrange numbers to create deterministic pattern
-        phone_numbers = [x.split('@', 1)[0] for x in jids]
-        phone_numbers.sort()
-
-        # Align all numbers as string
-        buffer = bytearray()
-        for jid in phone_numbers:
-            buffer.extend(jid.encode())
-
-        # Hash for unique length
-        return hashlib.sha1(buffer).hexdigest()
-
     ##################################################################
     # Incoming telegrams
     ##################################################################
@@ -79,7 +81,7 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
     @ProtocolEntityCallback("failure")
     def onLoginFailure(self, entity):
         self.connected = False
-        print("Could not login on Whatsapp. Reason: " + entity.getReason())
+        print("Could not login on Whats@pp. Reason: " + entity.getReason())
 
 
     @ProtocolEntityCallback("message")
@@ -165,7 +167,7 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
 
         if len(jids) >= 2:
             print("Group: subject: {0}, jids: {1}".format(subject, jids))
-            # Calculate unique group identifier to re-identify Whatsapp notification
+            # Calculate unique group identifier to re-identify Whats@pp notification
             # on creating this group
             group_hash = self.calc_numbers_hash(jids)
 
@@ -173,7 +175,7 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
             fut = Future()
             self.group_association[group_hash] = fut
 
-            # Create Whatsapp group
+            # Create Whats@pp group
             entity = CreateGroupsIqProtocolEntity(subject, participants=jids)
             self.toLower(entity)
 
