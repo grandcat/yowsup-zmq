@@ -124,8 +124,8 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
             jids = notification.getParticipants().keys()
             group_hash = self.calc_numbers_hash(jids)
 
-            fut = self.group_association.pop(group_hash)
-            if fut:
+            if group_hash in self.group_association:
+                fut = self.group_association.pop(group_hash)
                 fut.set_result(notification)
 
         print(type(notification))
