@@ -148,6 +148,7 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
         :type msg: str|bytes
 
         :return:
+            future for async notification
         """
         if isinstance(msg, str):
             msg = msg.encode("utf-8")
@@ -163,7 +164,17 @@ class ZmqBrokerLayer(ZmqInterface, YowInterfaceLayer):
 
     @zmqrpc
     def group_create(self, subject, participants):
-        jids = [self.normalize_jid(jid) for jid in participants.split(',')] if participants else []
+        """
+        Create a group room.
+        :param subject:
+            subject of the group
+        :param participants:
+            array of phone numbers of the participants
+
+        :return:
+            future for async notification
+        """
+        jids = [self.normalize_jid(jid) for jid in participants] if participants else []
 
         if len(jids) >= 2:
             print("Group: subject: {0}, jids: {1}".format(subject, jids))
